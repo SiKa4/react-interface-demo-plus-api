@@ -1,10 +1,18 @@
 import styled, {css} from "styled-components";
 import {LeftSidebarHeader} from "./left_sidebar_header/LeftSidebarHeader.tsx";
 import {DropDownMenu} from "../drop_down_menu/DropDownMenu.tsx";
-import {useEffect, useState} from "react";
+import {HTMLAttributes, useEffect, useState} from "react";
 import {apiRequest} from "../../api_request/api-request.ts";
+import {EmptyBody} from "../body/EmptyBody.tsx";
+import {MainBody} from "../body/main_body/MainBody.tsx";
+import {appStore} from "../../data/stores/app.store.ts";
+import {observer} from 'mobx-react-lite';
 
-export const LeftSidebar = () => {
+type LeftSidebar = HTMLAttributes<HTMLDivElement> & {
+    callbackMethod: (component: JSX.Element) => void;
+};
+
+export const LeftSidebar = observer(({callbackMethod}: LeftSidebar) => {
     const [indexOpenCategory, setIndexOpenCategory] = useState(3);
     const [filialContents, setFilialContents] = useState<{
         id: number,
@@ -24,16 +32,20 @@ export const LeftSidebar = () => {
 
     }, [selectedFilialDropDown]);
 
+    useEffect(() => {
+        callbackMethod(componentMenu[indexOpenCategory].component)
+    }, [indexOpenCategory]);
+
     const componentMenu = [
-        'Компоненты',
-        'Полуфабрикаты',
-        'Товары',
-        'Меню',
-        'Перемещения',
-        'Ивентаризация',
-        'Выпуск товара',
-        'Списание',
-        'Накладные'
+        {name: 'Компоненты', component: <EmptyBody/>},
+        {name: 'Полуфабрикаты', component: <EmptyBody/>},
+        {name: 'Товары', component: <EmptyBody/>},
+        {name: 'Меню', component: <MainBody/>},
+        {name: 'Перемещения', component: <EmptyBody/>},
+        {name: 'Ивентаризация', component: <EmptyBody/>},
+        {name: 'Выпуск товара', component: <EmptyBody/>},
+        {name: 'Списание', component: <EmptyBody/>},
+        {name: 'Накладные', component: <EmptyBody/>},
     ];
 
     const updateFilial = async () =>
@@ -45,7 +57,7 @@ export const LeftSidebar = () => {
     const setIsOpenCategory = (index: number) => setIndexOpenCategory(index);
 
     return (
-        <Wrapper>
+        <Wrapper isMobile={appStore.getIsMobile} isOpen={appStore.isOpenLeftSidebar}>
             <LeftSidebarHeader/>
             <ExpandMenuWrapper>
                 <FilialWrapper>
@@ -55,22 +67,32 @@ export const LeftSidebar = () => {
                 </FilialWrapper>
                 <MenuWrapper>
                     {componentMenu.map((x, i) => (
-                        <P onClick={() => setIsOpenCategory(i)} isOpen={indexOpenCategory == i}>− {x}</P>
+                        <P onClick={() => setIsOpenCategory(i)} isOpen={indexOpenCategory == i}>− {x.name}</P>
                     ))}
                 </MenuWrapper>
             </ExpandMenuWrapper>
         </Wrapper>
     );
-}
+});
 
 LeftSidebar.displayName = 'LeftSidebar'
 
-const Wrapper = styled.div.attrs({className: 'wrapper'})`
+const Wrapper = styled.div.attrs({className: 'wrapper'})<{ isMobile: boolean, isOpen: boolean }>`
   width: 250px;
   height: 100vh;
   padding-top: 10px;
   padding-left: 10px;
   padding-right: 10px;
+  transition: transform 1s;
+
+  ${({isMobile, isOpen}) => isMobile && !isOpen && css`
+    position: absolute;
+    transform: translateX(-105%);
+  `}
+
+  ${({isMobile, isOpen}) => isMobile && isOpen && css`
+    position: absolute;
+  `}
 `;
 
 const ExpandMenuWrapper = styled.div.attrs({className: 'expand-name-wrapper'})`

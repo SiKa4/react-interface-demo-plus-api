@@ -3,7 +3,6 @@ import {strings} from "../../../../assets/strings/strings.ts";
 import {DropDownMenu} from "../../../drop_down_menu/DropDownMenu.tsx";
 
 export const HeaderMainBody = () => {
-
     const callbackDropDownMenu = (id: number) => {
 
     };
