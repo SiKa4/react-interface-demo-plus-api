@@ -1,15 +1,22 @@
 import styled, {css} from "styled-components";
-import {HTMLAttributes, useState} from "react";
+import {HTMLAttributes, useEffect, useState} from "react";
 
 type DropDownMenu = HTMLAttributes<HTMLDivElement> & {
-    callbackMethod: (index: number) => void;
+    callbackMethod: (id: number) => void;
     width?: number;
-    contents: { id: number, name: string }[];
+    contents: { id: number, name: string }[] | null | undefined;
+    isStretching?: boolean;
 };
 
-export const DropDownMenu = ({callbackMethod, width, contents}: DropDownMenu) => {
-    const [selectedContent, setSelectedContent] = useState<{ id: number, name: string }>(contents[0]);
+export const DropDownMenu = ({callbackMethod, width, contents, isStretching}: DropDownMenu) => {
+    const [selectedContent, setSelectedContent] =
+        useState<{ id: number, name: string } | null>(null);
     const [isOpen, setInOpen] = useState(false);
+
+    useEffect(() => {
+        if (!contents) return;
+        setSelectedContent(contents[0])
+    }, [contents]);
 
     const onSelectedDropDownList = (content: {
         id: number,
@@ -23,10 +30,10 @@ export const DropDownMenu = ({callbackMethod, width, contents}: DropDownMenu) =>
     return (
         <>
             <Wrapper width={width} onClick={() => setInOpen(!isOpen)}>
-                {selectedContent.name}
+                {selectedContent?.name}
                 <DropDownMenuButton isOpen={isOpen}><span>∨</span></DropDownMenuButton>
             </Wrapper>
-            <DropdownList isOpen={isOpen}>
+            <DropdownList isOpen={isOpen} isStretching={isStretching}>
                 {
                     contents?.map((x, i) => (
                         <DropdownListItem key={i} onClick={() => onSelectedDropDownList(x)}
@@ -42,7 +49,7 @@ export const DropDownMenu = ({callbackMethod, width, contents}: DropDownMenu) =>
 DropDownMenu.displayName = 'DropDownMenu'
 
 
-const DropDownMenuButton = styled.div.attrs({className: 'drop-down-menu-button'})<{isOpen : boolean}>`
+const DropDownMenuButton = styled.div.attrs({className: 'drop-down-menu-button'})<{ isOpen: boolean }>`
   height: 100%;
   margin-left: auto;
   width: 30px;
@@ -51,8 +58,8 @@ const DropDownMenuButton = styled.div.attrs({className: 'drop-down-menu-button'}
   display: flex;
   justify-content: center;
   align-items: center;
-  
-  & span{
+
+  & span {
     transition: transform 0.3s ease-in-out;
     transform: ${props => props.isOpen ? 'none' : 'rotateX(180deg)'};
   }
@@ -63,7 +70,6 @@ const Wrapper = styled.div.attrs({className: 'wrapper'})<{ width: number | undef
   border-radius: 8px;
   height: 30px;
   width: ${props => props.width != undefined ? `${props.width}px` : `94.5%`};
-  color: var(--line-color);
   align-items: center;
   display: flex;
   padding-left: 10px;
@@ -71,12 +77,14 @@ const Wrapper = styled.div.attrs({className: 'wrapper'})<{ width: number | undef
   cursor: pointer;
 `;
 
-const DropdownList = styled.ul<{ isOpen: boolean }>`
-  position: relative;
+const DropdownList = styled.ul<{
+    isOpen: boolean,
+    isStretching: boolean | undefined,
+}>`
+  position: ${props => props.isStretching ? 'relative' : 'fixed'};
   list-style: none;
   margin: 0;
   background-color: #f1f1f1;
-  min-width: 90%;
   max-height: ${props => (props.isOpen ? '200px' : '0')};
   overflow: auto;
   transition: max-height 0.3s ease-in-out;
