@@ -1,0 +1,23 @@
+@import "./colors";
+
+@font-face {
+  font-family: 'Arial';
+}
+
+html, body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  color: white;
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Golos', sans-serif;
+  line-height: 20px;
+}
+
