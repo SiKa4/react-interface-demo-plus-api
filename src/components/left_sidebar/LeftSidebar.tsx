@@ -79,10 +79,8 @@ LeftSidebar.displayName = 'LeftSidebar'
 
 const Wrapper = styled.div.attrs({className: 'wrapper'})<{ isMobile: boolean, isOpen: boolean }>`
   width: 250px;
-  height: 100vh;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  height: calc(100vh - 140px);
+  padding: 10px;
   transition: transform 1s;
 
   ${({isMobile, isOpen}) => isMobile && !isOpen && css`
@@ -100,6 +98,7 @@ const ExpandMenuWrapper = styled.div.attrs({className: 'expand-name-wrapper'})`
   height: 100%;
   width: 250px;
   padding-right: 10px;
+  background-color: white;
 `;
 
 const FilialWrapper = styled.div.attrs({className: 'filial-wrapper'})`

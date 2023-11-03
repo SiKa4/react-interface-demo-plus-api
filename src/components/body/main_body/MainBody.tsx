@@ -7,6 +7,8 @@ export const MainBody = observer(() => {
     return (
         <Wrapper isMobile={appStore.getIsMobile}>
             <HeaderMainBody/>
+            <Body></Body>
+            <PaginationTable></PaginationTable>
         </Wrapper>
     );
 });
@@ -18,4 +20,16 @@ const Wrapper = styled.div.attrs({className: 'wrapper'})<{isMobile: boolean}>`
   height: 100vh;
   padding-right: 20px;
   padding-left: 20px;
+`;
+
+const Body = styled.div.attrs({className: 'body'})`
+  width: 100%;
+  height: calc(100% - 100px);
+  background-color: #1B1918;
+`;
+
+const PaginationTable = styled.div.attrs({className: 'pagination-table'})`
+  height: 35px;
+  width: 100%;
+  background-color: #D40025;
 `;
