@@ -16,6 +16,7 @@ export const DropDownMenu = ({callbackMethod, width, contents, isStretching}: Dr
     useEffect(() => {
         if (!contents) return;
         setSelectedContent(contents[0])
+        callbackMethod(contents[0].id);
     }, [contents]);
 
     const onSelectedDropDownList = (content: {

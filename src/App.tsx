@@ -13,6 +13,7 @@ function App() {
     }
 
     useEffect(() => {
+        updateIsMobile();
         self.addEventListener('resize', updateIsMobile);
 
         return () => {

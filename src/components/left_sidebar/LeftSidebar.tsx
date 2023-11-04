@@ -29,7 +29,7 @@ export const LeftSidebar = observer(({callbackMethod}: LeftSidebar) => {
 
     useEffect(() => {
         if (!selectedFilialDropDown) return;
-
+        appStore.setSelectFilial(selectedFilialDropDown.id);
     }, [selectedFilialDropDown]);
 
     useEffect(() => {
@@ -123,10 +123,10 @@ const P = styled.p<{ isOpen: boolean }>`
 
   ${({isOpen}) => isOpen && css`
     height: 40px !important;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.35);
   `}
   &:hover {
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.35);
     height: 35px;
   }
 

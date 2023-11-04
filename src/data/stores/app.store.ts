@@ -3,6 +3,7 @@ import {makeAutoObservable} from 'mobx';
 class AppStore {
     private _isMobile = false;
     private _isOpenLeftSidebar = true;
+    private _selectFilial : number | null = null;
 
     constructor() {
         makeAutoObservable(this);
@@ -22,6 +23,14 @@ class AppStore {
 
     public get isOpenLeftSidebar() {
         return this._isOpenLeftSidebar;
+    }
+
+    public setSelectFilial(id: number) {
+        this._selectFilial = id;
+    }
+
+    public get getSelectFilial() {
+        return this._selectFilial;
     }
 }
 
