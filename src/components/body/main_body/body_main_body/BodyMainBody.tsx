@@ -109,6 +109,7 @@ export const BodyMainBody = observer((
                         <TableHeaderCell>
                             <span>{strings.export}</span>
                         </TableHeaderCell>
+                        <TableHeaderCell/>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -170,6 +171,7 @@ const TableHeaderCell = styled.th`
   text-align: left;
   color: var(--light-color);
   font-size: 15px;
+  width: 200px;
 
   span {
     cursor: pointer;
@@ -191,6 +193,7 @@ const TableRow = styled.tr<{ isHeader?: boolean }>`
       box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.47);
     }
   `}
+  
 `;
 
 const Img = styled.img`
@@ -221,6 +224,7 @@ const Input = styled.input.attrs({className: 'input'})`
   border: rgba(101, 122, 157, 0.53) 1px solid;
   border-radius: 5px;
   width: 100%;
+  max-width: 200px;
   text-indent: 6px;
   outline: none;
 
