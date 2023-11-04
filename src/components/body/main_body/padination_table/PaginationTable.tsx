@@ -22,14 +22,6 @@ export const PaginationTable = observer(({maxPages, callbackSelectedPage}: Pagin
     }, [selectedIndex]);
 
     useEffect(() => {
-        window.addEventListener('resize', updatePagination);
-
-        return () => {
-            window.removeEventListener('resize', updatePagination);
-        };
-    }, []);
-
-    useEffect(() => {
         updatePagination();
     }, [appStore.getSelectFilial, maxPages]);
 
@@ -96,6 +88,7 @@ const Wrapper = styled.div.attrs({className: 'wrapper'})`
   gap: 15px;
   align-items: center;
   transition: width 1s ease-in-out;
+  padding-top: 10px;
 
   & ${Img}:last-child {
     transform: rotate(180deg);

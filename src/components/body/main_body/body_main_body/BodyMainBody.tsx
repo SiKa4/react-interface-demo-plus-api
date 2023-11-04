@@ -3,7 +3,7 @@ import {strings} from "../../../../assets/strings/strings.ts";
 import {DropDownMenu} from "../../../drop_down_menu/DropDownMenu.tsx";
 import {basketIcon, diagramIcon, pencilIcon} from "../../../../assets/img.ts";
 import {observer} from "mobx-react-lite";
-import {HTMLAttributes, useEffect, useRef, useState} from "react";
+import {HTMLAttributes} from "react";
 import {BodyData, BodyParams} from "../../../../data/Types.ts";
 
 type BodyMainBody = HTMLAttributes<HTMLDivElement> & {
@@ -24,41 +24,6 @@ export const BodyMainBody = observer((
         setParamsBodyRequest
     }: BodyMainBody) => {
 
-    const tableRef = useRef(null);
-    const [pageSize, setPageSize] = useState(10);
-
-    useEffect(() => {
-        handleResize();
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    const handleResize = () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const currentTableWidth = tableRef.current.clientWidth;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const currentTableHeight = tableRef.current.clientHeight;
-
-        const kfX = (currentTableWidth < 800 ? 140 : 110);
-        const kfY = currentTableWidth >= currentTableHeight * 2 ?
-            currentTableHeight / 200 : currentTableHeight / 300;
-
-        const newPageSize = Math.floor((currentTableWidth / kfX) - kfY);
-
-        setPageSize(newPageSize < 1 ? 1 : newPageSize);
-    };
-
-    useEffect(() => {
-        if (!setParamsBodyRequest || !paramsBodyRequest) return;
-        setParamsBodyRequest({...paramsBodyRequest, limit: pageSize});
-    }, [pageSize]);
-
     const callbackDropDownMenu = (id: number) => {
         if (!paramsBodyRequest || !setParamsBodyRequest) return;
         let value = '';
@@ -74,7 +39,7 @@ export const BodyMainBody = observer((
     };
 
     return (
-        <Wrapper ref={tableRef}>
+        <Wrapper>
             <Table>
                 <TableHeader>
                     <TableRow isHeader={true}>
@@ -148,18 +113,33 @@ BodyMainBody.displayName = 'BodyMainBody';
 const Wrapper = styled.div.attrs({className: 'body'})`
   width: 100%;
   height: calc(100% - 50px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
+    border-radius: 8px;
+    border-left: 3px white solid;
+  }
 `;
 
 const Table = styled.table`
   width: 100%;
-  border-collapse: collapse;
-  border: none;
+  border-collapse: separate;
   color: var(--line-color);
   font-size: 15px;
+  border-spacing: 0;
+  
+  th {
+    border-bottom: var(--line-color) 1px solid;
+  }
 `;
 
 const TableCell = styled.td`
-  border: none;
   width: 100px;
   color: var(--line-color);
   padding: 15px 13px;
@@ -188,12 +168,10 @@ const TableRow = styled.tr<{ isHeader?: boolean }>`
     cursor: pointer;
     transition: box-shadow 0.5s ease-in-out;
     border-radius: 10px;
-
     &:hover {
       box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.47);
     }
   `}
-  
 `;
 
 const Img = styled.img`
@@ -213,6 +191,10 @@ const ImageWrapper = styled.div.attrs({className: 'image-wrapper'})`
 `;
 
 const TableHeader = styled.thead`
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  background-color: white;
   border-bottom: var(--line-color) 1px solid;
 `;
 

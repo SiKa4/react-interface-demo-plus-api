@@ -12,7 +12,7 @@ const initialBodyParams: BodyParams = {
     name: '',
     active: '',
     filial: '',
-    limit: 8,
+    limit: 3,
     tt: ''
 };
 
