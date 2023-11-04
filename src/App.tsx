@@ -5,7 +5,7 @@ import {appStore} from "./data/stores/app.store.ts";
 
 function App() {
     function updateIsMobile() {
-        const isMobile = self.innerWidth <= 945;
+        const isMobile = self.innerWidth <= 1125;
         if (isMobile != appStore.getIsMobile) {
             appStore.setIsMobile(isMobile);
             appStore.setIsOpenLeftSidebar(false);

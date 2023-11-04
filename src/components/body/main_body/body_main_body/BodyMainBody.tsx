@@ -3,9 +3,8 @@ import {strings} from "../../../../assets/strings/strings.ts";
 import {DropDownMenu} from "../../../drop_down_menu/DropDownMenu.tsx";
 import {basketIcon, diagramIcon, pencilIcon} from "../../../../assets/img.ts";
 import {observer} from "mobx-react-lite";
-import {HTMLAttributes, ReactEventHandler, useEffect} from "react";
+import {HTMLAttributes, useEffect, useRef, useState} from "react";
 import {BodyData, BodyParams} from "../../../../data/Types.ts";
-import {appStore} from "../../../../data/stores/app.store.ts";
 
 type BodyMainBody = HTMLAttributes<HTMLDivElement> & {
     data: BodyData | null;
@@ -25,29 +24,39 @@ export const BodyMainBody = observer((
         setParamsBodyRequest
     }: BodyMainBody) => {
 
-    function isWrapWindow() {
-        if (!paramsBodyRequest || !setParamsBodyRequest) return;
-        const height = self.innerHeight;
-        const width = self.innerWidth;
-
-        let limit = parseInt(String(((height / 200) + (width / 400) + 1)));
-
-        if(limit < 1) limit = 1;
-
-        if(limit == paramsBodyRequest.limit) return;
-
-        setParamsBodyRequest({...paramsBodyRequest, limit: limit});
-    }
-
+    const tableRef = useRef(null);
+    const [size, setSize]
+        = useState<{ width: number, height: number } | null>(null);
 
     useEffect(() => {
-        isWrapWindow();
-        self.addEventListener('resize', isWrapWindow);
+        if (!paramsBodyRequest || !setParamsBodyRequest || !size) return;
+        const mainHeight = size?.height;
+        const tableHeight = tableRef!.current!.offsetHeight;
+
+        console.log(mainHeight, tableHeight);
+
+        let value = 0;
+
+        if (tableHeight + 250 > mainHeight) value--;
+        else if (tableHeight - 100 < mainHeight) value++;
+
+        setParamsBodyRequest({...paramsBodyRequest, limit: paramsBodyRequest.limit + value});
+    }, [size]);
+
+    const setNewWidthAndHeigth = () => {
+        if (size?.width == self.innerWidth || size?.height == self.innerHeight) return;
+        setSize({width: self.innerWidth, height: self.innerHeight})
+    };
+
+    useEffect(() => {
+        self.addEventListener('resize',
+            () => setNewWidthAndHeigth);
 
         return () => {
-            self.removeEventListener('resize', isWrapWindow);
+            self.removeEventListener('resize',
+                () => setNewWidthAndHeigth);
         };
-    }, [,]);
+    }, []);
 
     const callbackDropDownMenu = (id: number) => {
         if (!paramsBodyRequest || !setParamsBodyRequest) return;
@@ -60,12 +69,11 @@ export const BodyMainBody = observer((
                 value = 'no_active';
                 break;
         }
-        console.log(value);
         setParamsBodyRequest({...paramsBodyRequest, active: value});
     };
 
     return (
-        <Wrapper>
+        <Wrapper onChange={() => onResizeChange()}>
             <Table>
                 <TableHeader>
                     <TableRow isHeader={true}>
@@ -102,7 +110,7 @@ export const BodyMainBody = observer((
                         </TableHeaderCell>
                     </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody ref={tableRef}>
                     {data && data?.data.map((row, index) => (
                         <TableRow key={index}>
                             <TableCell>{row.name}</TableCell>
@@ -112,9 +120,9 @@ export const BodyMainBody = observer((
                             <TableCell>
                                 {
                                     row.export.length > 0 ?
-                                    row.export.map((exportV, i) => (
-                                        <P key={i}>{exportV}</P>
-                                    )) : null
+                                        row.export.map((exportV, i) => (
+                                            <P key={i}>{exportV}</P>
+                                        )) : null
                                 }
                             </TableCell>
                             <TableCell>
