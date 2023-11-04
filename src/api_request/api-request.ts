@@ -1,4 +1,5 @@
 import axios from "axios";
+import {BodyData, BodyParams} from "../data/Types.ts";
 
 class ApiRequest {
     mainUrl = "https://testjob.checkport.ru/";
@@ -17,27 +18,11 @@ class ApiRequest {
             });
     }
 
-    public GetInfoAboutFilialById(id: number) {
-        return axios.get(this.mainUrl + `filial/${id}/menu/`)
+    public GetInfoAboutFilialById(id: number, params: BodyParams) {
+        return axios.get(this.mainUrl + `filial/${id}/menu/`, {params})
             .then(response => {
                 const data = response.data;
-                return data as {
-                    max_pages: number,
-                    data: {
-                        id: number,
-                        name: string,
-                        filial: {
-                            id: number,
-                            name: string,
-                        }
-                        tt: {
-                            id: number,
-                            name: string
-                        },
-                        active: boolean,
-                        export: string[]
-                    }[]
-                }[]
+                return data as BodyData;
             })
             .catch(() => {
                 return null;

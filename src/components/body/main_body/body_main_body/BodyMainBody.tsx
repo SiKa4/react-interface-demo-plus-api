@@ -3,15 +3,41 @@ import {strings} from "../../../../assets/strings/strings.ts";
 import {DropDownMenu} from "../../../drop_down_menu/DropDownMenu.tsx";
 import {basketIcon, diagramIcon, pencilIcon} from "../../../../assets/img.ts";
 import {observer} from "mobx-react-lite";
+import {HTMLAttributes} from "react";
+import {BodyData, BodyParams} from "../../../../data/Types.ts";
 
-export const BodyMainBody = observer(() => {
-    const data = [
-        ['Какое меню 1', 'Западная Москва река и лодка', 'Сушу кручу', 'Активно', 'Яндекс', 'Header 6'],
-        ['Какое меню 1', 'Западная Москва река и лодка', 'Сушу кручу', 'Не активно', 'Яндекс', 'Header 6'],
-    ];
+type BodyMainBody = HTMLAttributes<HTMLDivElement> & {
+    data: BodyData | null;
+    paramsBodyRequest: BodyParams;
+    setParamsBodyRequest: (params: BodyParams) => void;
+};
+
+
+const dropDownContent = [
+    {id: 1, name: 'Не выбрано'},
+    {id: 2, name: 'Активно'},
+    {id: 3, name: 'Не активно'}];
+
+export const BodyMainBody = observer((
+    {
+        data,
+        paramsBodyRequest,
+        setParamsBodyRequest
+    }: BodyMainBody) => {
 
     const callbackDropDownMenu = (id: number) => {
-
+        if (!paramsBodyRequest || !setParamsBodyRequest) return;
+        let value = '';
+        switch (id) {
+            case 2:
+                value = 'active';
+                break;
+            case 3:
+                value = 'no_active';
+                break;
+        }
+        console.log(value);
+        setParamsBodyRequest({...paramsBodyRequest, active: value});
     };
 
     return (
@@ -20,19 +46,31 @@ export const BodyMainBody = observer(() => {
                 <TableHeader>
                     <TableRow isHeader={true}>
                         <TableHeaderCell>
-                            <Input placeholder={strings.nameMenu}/>
+                            <Input placeholder={strings.nameMenu} value={paramsBodyRequest.name}
+                                   onChange={(e) => setParamsBodyRequest({
+                                       ...paramsBodyRequest,
+                                       name: e.target.value
+                                   })}/>
                         </TableHeaderCell>
                         <TableHeaderCell>
-                            <Input placeholder={strings.filial}/>
+                            <Input placeholder={strings.filial}
+                                   onChange={(e) => setParamsBodyRequest({
+                                       ...paramsBodyRequest,
+                                       filial: e.target.value
+                                   })}/>
                         </TableHeaderCell>
                         <TableHeaderCell>
-                            <Input placeholder={strings.pointOfSale}/>
+                            <Input placeholder={strings.pointOfSale}
+                                   onChange={(e) => setParamsBodyRequest({
+                                       ...paramsBodyRequest,
+                                       tt: e.target.value
+                                   })}/>
                         </TableHeaderCell>
                         <TableHeaderCell>
                             <DropDownMenuWrapper>
                                 <DropDownMenu callbackMethod={callbackDropDownMenu}
-                                              contents={[{id: 1, name: 'Активно'}, {id: 2, name: 'Не активно'}]}
-                                              width={105}/>
+                                              contents={dropDownContent}
+                                              width={115}/>
                             </DropDownMenuWrapper>
                         </TableHeaderCell>
                         <TableHeaderCell>
@@ -41,14 +79,20 @@ export const BodyMainBody = observer(() => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.map((row, index) => (
+                    {data && data?.data.map((row, index) => (
                         <TableRow key={index}>
-                            <TableCell>{row[0]}</TableCell>
-                            <TableCell>{row[1]}</TableCell>
-                            <TableCell>{row[2]}</TableCell>
-                            <TableCell>{row[3]}</TableCell>
-                            <TableCell>{row[4]}</TableCell>
-                            <TableCell>{row[5]}</TableCell>
+                            <TableCell>{row.name}</TableCell>
+                            <TableCell>{row.filial.name}</TableCell>
+                            <TableCell>{row.tt.name}</TableCell>
+                            <TableCell>{row.active ? 'Активно' : 'Не активно'}</TableCell>
+                            <TableCell>
+                                {
+                                    row.export.length > 0 ?
+                                    row.export.map((exportV, i) => (
+                                        <P key={i}>{exportV}</P>
+                                    )) : null
+                                }
+                            </TableCell>
                             <TableCell>
                                 <ImageWrapper>
                                     <Img src={diagramIcon}/>
@@ -98,6 +142,10 @@ const TableHeaderCell = styled.th`
     cursor: pointer;
     font-weight: 400;
   }
+`;
+
+const P = styled.p`
+  margin: 0 0 5px;
 `;
 
 const TableRow = styled.tr<{ isHeader?: boolean }>`

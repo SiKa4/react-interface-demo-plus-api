@@ -82,6 +82,7 @@ const Wrapper = styled.div.attrs({className: 'wrapper'})<{ isMobile: boolean, is
   height: calc(100vh - 140px);
   padding: 10px;
   transition: transform 1s;
+  z-index: 10;
 
   ${({isMobile, isOpen}) => isMobile && !isOpen && css`
     position: absolute;

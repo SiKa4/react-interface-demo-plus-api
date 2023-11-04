@@ -4,21 +4,45 @@ import {appStore} from "../../../data/stores/app.store.ts";
 import {BodyMainBody} from "./body_main_body/BodyMainBody.tsx";
 import {PaginationTable} from "./padination_table/PaginationTable.tsx";
 import {useEffect, useState} from "react";
+import {apiRequest} from "../../../api_request/api-request.ts";
+import {BodyData, BodyParams} from "../../../data/Types.ts";
+
+const initialBodyParams: BodyParams = {
+    page: 1,
+    name: '',
+    active: '',
+    filial: '',
+    limit: 8,
+    tt: ''
+};
 
 export const MainBody = observer(() => {
 
+    const [bodyData, setBodyData] = useState<BodyData | null>(null);
+    const [paramsBodyRequest, setParamsBodyRequest] = useState(initialBodyParams);
     const filial = appStore.getSelectFilial;
-    const [bodyData, setBodyData] = useState<>()
 
     useEffect(() => {
-        if(!filial) return;
+        getDataInFilial();
+    }, [filial, paramsBodyRequest]);
 
-    }, [filial]);
+    const getDataInFilial = async () => {
+        if (!filial) return;
+        setBodyData(await apiRequest.GetInfoAboutFilialById(filial, paramsBodyRequest));
+    }
+
+    const callbackSelectedPage = (page: number) => {
+        const params = {
+            ...paramsBodyRequest, page: page
+        };
+        setParamsBodyRequest(params);
+    }
 
     return (
         <Wrapper isMobile={appStore.getIsMobile}>
-            <BodyMainBody/>
-            <PaginationTable maxPages={10}/>
+            <BodyMainBody data={bodyData} paramsBodyRequest={paramsBodyRequest}
+                          setParamsBodyRequest={setParamsBodyRequest}/>
+            <PaginationTable maxPages={bodyData?.max_pages ?? 0} callbackSelectedPage={callbackSelectedPage}/>
         </Wrapper>
     );
 });

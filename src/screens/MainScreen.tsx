@@ -36,7 +36,7 @@ const HamburgerIcon = styled.img.attrs({className: 'hamburger-icon'})<{ isOpen: 
   width: 24px;
   cursor: pointer;
   filter: invert(1);
-  z-index: 20;
+  z-index: 11;
   position: absolute;
   left: 5px;
   top: 13px;

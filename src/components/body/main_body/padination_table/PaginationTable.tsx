@@ -1,18 +1,30 @@
 import styled from "styled-components";
-import {HTMLAttributes, useState} from "react";
+import {HTMLAttributes, useEffect, useState} from "react";
 import {arrowIcon} from "../../../../assets/img.ts";
+import {observer} from "mobx-react-lite";
+import {appStore} from "../../../../data/stores/app.store.ts";
 
 type PaginationTable = HTMLAttributes<HTMLDivElement> & {
-    maxPages: number
+    maxPages: number;
+    callbackSelectedPage: (page: number) => void;
 };
 
 const pagesCollapse = 4;
 
-export const PaginationTable = ({maxPages}: PaginationTable) => {
+export const PaginationTable = observer(({maxPages, callbackSelectedPage}: PaginationTable) => {
 
     const [firstIndex, setFirstIndex] = useState(1);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        callbackSelectedPage(selectedIndex + 1);
+    }, [selectedIndex]);
+
+    useEffect(() => {
+        setSelectedIndex(0);
+        setFirstIndex(1);
+    }, [appStore.getSelectFilial]);
 
     const selectedItem = (index: number) => {
         setSelectedIndex(index)
@@ -48,12 +60,12 @@ export const PaginationTable = ({maxPages}: PaginationTable) => {
     return (
         <Wrapper>
             <Img src={arrowIcon} onClick={() => plusAndMinusIndex(-1)}/>
-            {maxPages == pagesCollapse || isOpen && contentsNav}
-            {maxPages > pagesCollapse && !isOpen && contentsNavCollapse}
+            {(maxPages < pagesCollapse || isOpen) && contentsNav}
+            {(maxPages > pagesCollapse && !isOpen) && contentsNavCollapse}
             <Img src={arrowIcon} onClick={() => plusAndMinusIndex(1)}/>
         </Wrapper>
     );
-}
+});
 
 PaginationTable.displayName = 'PaginationTable';
 
@@ -61,6 +73,7 @@ const Img = styled.img`
   cursor: pointer;
   height: 25px;
   width: 25px;
+  z-index: 5;
 `;
 
 const Wrapper = styled.div.attrs({className: 'wrapper'})`
