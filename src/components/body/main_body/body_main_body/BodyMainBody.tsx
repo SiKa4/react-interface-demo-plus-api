@@ -3,15 +3,15 @@ import {strings} from "../../../../assets/strings/strings.ts";
 import {DropDownMenu} from "../../../drop_down_menu/DropDownMenu.tsx";
 import {basketIcon, diagramIcon, pencilIcon} from "../../../../assets/img.ts";
 import {observer} from "mobx-react-lite";
-import {HTMLAttributes} from "react";
+import {HTMLAttributes, ReactEventHandler, useEffect} from "react";
 import {BodyData, BodyParams} from "../../../../data/Types.ts";
+import {appStore} from "../../../../data/stores/app.store.ts";
 
 type BodyMainBody = HTMLAttributes<HTMLDivElement> & {
     data: BodyData | null;
     paramsBodyRequest: BodyParams;
     setParamsBodyRequest: (params: BodyParams) => void;
 };
-
 
 const dropDownContent = [
     {id: 1, name: 'Не выбрано'},
@@ -24,6 +24,30 @@ export const BodyMainBody = observer((
         paramsBodyRequest,
         setParamsBodyRequest
     }: BodyMainBody) => {
+
+    function isWrapWindow() {
+        if (!paramsBodyRequest || !setParamsBodyRequest) return;
+        const height = self.innerHeight;
+        const width = self.innerWidth;
+
+        let limit = parseInt(String(((height / 200) + (width / 400) + 1)));
+
+        if(limit < 1) limit = 1;
+
+        if(limit == paramsBodyRequest.limit) return;
+
+        setParamsBodyRequest({...paramsBodyRequest, limit: limit});
+    }
+
+
+    useEffect(() => {
+        isWrapWindow();
+        self.addEventListener('resize', isWrapWindow);
+
+        return () => {
+            self.removeEventListener('resize', isWrapWindow);
+        };
+    }, [,]);
 
     const callbackDropDownMenu = (id: number) => {
         if (!paramsBodyRequest || !setParamsBodyRequest) return;
