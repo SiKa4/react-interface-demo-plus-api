@@ -5,7 +5,6 @@ import {basketIcon, diagramIcon, pencilIcon} from "../../../../assets/img.ts";
 import {observer} from "mobx-react-lite";
 import {HTMLAttributes, useEffect, useRef, useState} from "react";
 import {BodyData, BodyParams} from "../../../../data/Types.ts";
-import {appStore} from "../../../../data/stores/app.store.ts";
 
 type BodyMainBody = HTMLAttributes<HTMLDivElement> & {
     data: BodyData | null;
