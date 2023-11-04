@@ -5,6 +5,7 @@ import {basketIcon, diagramIcon, pencilIcon} from "../../../../assets/img.ts";
 import {observer} from "mobx-react-lite";
 import {HTMLAttributes, useEffect, useRef, useState} from "react";
 import {BodyData, BodyParams} from "../../../../data/Types.ts";
+import {appStore} from "../../../../data/stores/app.store.ts";
 
 type BodyMainBody = HTMLAttributes<HTMLDivElement> & {
     data: BodyData | null;
@@ -25,38 +26,39 @@ export const BodyMainBody = observer((
     }: BodyMainBody) => {
 
     const tableRef = useRef(null);
-    const [size, setSize]
-        = useState<{ width: number, height: number } | null>(null);
+    const [pageSize, setPageSize] = useState(10);
 
     useEffect(() => {
-        if (!paramsBodyRequest || !setParamsBodyRequest || !size) return;
-        const mainHeight = size?.height;
-        const tableHeight = tableRef!.current!.offsetHeight;
+        handleResize();
 
-        console.log(mainHeight, tableHeight);
+        window.addEventListener('resize', handleResize);
 
-        let value = 0;
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
-        if (tableHeight + 250 > mainHeight) value--;
-        else if (tableHeight - 100 < mainHeight) value++;
+    const handleResize = () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const currentTableWidth = tableRef.current.clientWidth;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const currentTableHeight = tableRef.current.clientHeight;
 
-        setParamsBodyRequest({...paramsBodyRequest, limit: paramsBodyRequest.limit + value});
-    }, [size]);
+        const kfX = (currentTableWidth < 800 ? 140 : 110);
+        const kfY = currentTableWidth >= currentTableHeight * 2 ?
+            currentTableHeight / 200 : currentTableHeight / 300;
 
-    const setNewWidthAndHeigth = () => {
-        if (size?.width == self.innerWidth || size?.height == self.innerHeight) return;
-        setSize({width: self.innerWidth, height: self.innerHeight})
+        const newPageSize = Math.floor((currentTableWidth / kfX) - kfY);
+
+        setPageSize(newPageSize < 1 ? 1 : newPageSize);
     };
 
     useEffect(() => {
-        self.addEventListener('resize',
-            () => setNewWidthAndHeigth);
-
-        return () => {
-            self.removeEventListener('resize',
-                () => setNewWidthAndHeigth);
-        };
-    }, []);
+        if (!setParamsBodyRequest || !paramsBodyRequest) return;
+        setParamsBodyRequest({...paramsBodyRequest, limit: pageSize});
+    }, [pageSize]);
 
     const callbackDropDownMenu = (id: number) => {
         if (!paramsBodyRequest || !setParamsBodyRequest) return;
@@ -73,7 +75,7 @@ export const BodyMainBody = observer((
     };
 
     return (
-        <Wrapper onChange={() => onResizeChange()}>
+        <Wrapper ref={tableRef}>
             <Table>
                 <TableHeader>
                     <TableRow isHeader={true}>
@@ -110,7 +112,7 @@ export const BodyMainBody = observer((
                         </TableHeaderCell>
                     </TableRow>
                 </TableHeader>
-                <TableBody ref={tableRef}>
+                <TableBody>
                     {data && data?.data.map((row, index) => (
                         <TableRow key={index}>
                             <TableCell>{row.name}</TableCell>

@@ -12,19 +12,32 @@ type PaginationTable = HTMLAttributes<HTMLDivElement> & {
 const pagesCollapse = 4;
 
 export const PaginationTable = observer(({maxPages, callbackSelectedPage}: PaginationTable) => {
-
     const [firstIndex, setFirstIndex] = useState(1);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         callbackSelectedPage(selectedIndex + 1);
+        if((selectedIndex + 1) - 4 >= maxPages - 6) setIsOpen(true);
     }, [selectedIndex]);
 
     useEffect(() => {
+        window.addEventListener('resize', updatePagination);
+
+        return () => {
+            window.removeEventListener('resize', updatePagination);
+        };
+    }, []);
+
+    useEffect(() => {
+        updatePagination();
+    }, [appStore.getSelectFilial, maxPages]);
+
+    function updatePagination() {
         setSelectedIndex(0);
         setFirstIndex(1);
-    }, [appStore.getSelectFilial]);
+        setIsOpen(false);
+    }
 
     const selectedItem = (index: number) => {
         setSelectedIndex(index)
@@ -52,7 +65,7 @@ export const PaginationTable = observer(({maxPages, callbackSelectedPage}: Pagin
                 ))
             }
             <WrapperPage key='...' onClick={() => setIsOpen(true)}>...</WrapperPage>
-            <WrapperPage key={maxPages} isSelected={maxPages == selectedIndex}>{maxPages}</WrapperPage>
+            <WrapperPage key={maxPages} isSelected={maxPages == selectedIndex} onClick={() => selectedItem(maxPages - 1)}>{maxPages}</WrapperPage>
         </>
     );
 
@@ -60,7 +73,7 @@ export const PaginationTable = observer(({maxPages, callbackSelectedPage}: Pagin
     return (
         <Wrapper>
             <Img src={arrowIcon} onClick={() => plusAndMinusIndex(-1)}/>
-            {(maxPages < pagesCollapse || isOpen) && contentsNav}
+            {(maxPages <= pagesCollapse || isOpen) && contentsNav}
             {(maxPages > pagesCollapse && !isOpen) && contentsNavCollapse}
             <Img src={arrowIcon} onClick={() => plusAndMinusIndex(1)}/>
         </Wrapper>
