@@ -133,6 +133,8 @@ const Table = styled.table`
   color: var(--line-color);
   font-size: 15px;
   border-spacing: 0;
+  padding-left: 10px;
+  padding-right: 10px;
   
   th {
     border-bottom: var(--line-color) 1px solid;
