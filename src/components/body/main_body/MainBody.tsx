@@ -4,7 +4,7 @@ import {appStore} from "../../../data/stores/app.store.ts";
 import {BodyMainBody} from "./body_main_body/BodyMainBody.tsx";
 import {PaginationTable} from "./padination_table/PaginationTable.tsx";
 import {useEffect, useState} from "react";
-import {apiRequest} from "../../../api_request/api-request.ts";
+import {apiRequest, useGetValueQuery} from "../../../api_request/api-request.ts";
 import {BodyData, BodyParams} from "../../../data/Types.ts";
 
 const initialBodyParams: BodyParams = {
@@ -21,6 +21,14 @@ export const MainBody = observer(() => {
     const [bodyData, setBodyData] = useState<BodyData | null>(null);
     const [paramsBodyRequest, setParamsBodyRequest] = useState(initialBodyParams);
     const filial = appStore.getSelectFilial;
+
+    const { data, error, isLoading } = useGetValueQuery("filial/");
+
+    useEffect(() => {
+        console.log(data);
+        console.log(error);
+        console.log(isLoading);
+    }, [data, error, isLoading]);
 
     useEffect(() => {
         getDataInFilial();
