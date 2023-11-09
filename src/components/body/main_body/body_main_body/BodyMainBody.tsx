@@ -7,7 +7,7 @@ import {HTMLAttributes} from "react";
 import {BodyData, BodyParams} from "../../../../data/Types.ts";
 
 type BodyMainBody = HTMLAttributes<HTMLDivElement> & {
-    data: BodyData | null;
+    data: BodyData | undefined | null;
     paramsBodyRequest: BodyParams;
     setParamsBodyRequest: (params: BodyParams) => void;
 };

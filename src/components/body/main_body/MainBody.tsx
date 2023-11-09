@@ -4,8 +4,8 @@ import {appStore} from "../../../data/stores/app.store.ts";
 import {BodyMainBody} from "./body_main_body/BodyMainBody.tsx";
 import {PaginationTable} from "./padination_table/PaginationTable.tsx";
 import {useEffect, useState} from "react";
-import {apiRequest, useGetValueQuery} from "../../../api_request/api-request.ts";
-import {BodyData, BodyParams} from "../../../data/Types.ts";
+import {BodyParams} from "../../../data/Types.ts";
+import {useGetInfoAboutFilialByIdQuery} from "../../../api_request/api-request.ts";
 
 const initialBodyParams: BodyParams = {
     page: 1,
@@ -17,26 +17,21 @@ const initialBodyParams: BodyParams = {
 };
 
 export const MainBody = observer(() => {
-
-    const [bodyData, setBodyData] = useState<BodyData | null>(null);
     const [paramsBodyRequest, setParamsBodyRequest] = useState(initialBodyParams);
     const filial = appStore.getSelectFilial;
 
-    const { data, error, isLoading } = useGetValueQuery("filial/");
-
-    useEffect(() => {
-        console.log(data);
-        console.log(error);
-        console.log(isLoading);
-    }, [data, error, isLoading]);
+    const {data: bodyData, refetch: refetchBodyData} = useGetInfoAboutFilialByIdQuery({
+        idFilial: filial,
+        args: paramsBodyRequest
+    });
 
     useEffect(() => {
         getDataInFilial();
     }, [filial, paramsBodyRequest]);
 
     const getDataInFilial = async () => {
-        if (!filial) return;
-        setBodyData(await apiRequest.GetInfoAboutFilialById(filial, paramsBodyRequest));
+        if (filial)
+            await refetchBodyData();
     }
 
     const callbackSelectedPage = (page: number) => {

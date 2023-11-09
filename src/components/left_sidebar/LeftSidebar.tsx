@@ -2,7 +2,7 @@ import styled, {css} from "styled-components";
 import {LeftSidebarHeader} from "./left_sidebar_header/LeftSidebarHeader.tsx";
 import {DropDownMenu} from "../drop_down_menu/DropDownMenu.tsx";
 import {HTMLAttributes, useEffect, useState} from "react";
-import {apiRequest} from "../../api_request/api-request.ts";
+import {useGetAllFilialQuery} from "../../api_request/api-request.ts";
 import {EmptyBody} from "../body/EmptyBody.tsx";
 import {MainBody} from "../body/main_body/MainBody.tsx";
 import {appStore} from "../../data/stores/app.store.ts";
@@ -14,18 +14,12 @@ type LeftSidebar = HTMLAttributes<HTMLDivElement> & {
 
 export const LeftSidebar = observer(({callbackMethod}: LeftSidebar) => {
     const [indexOpenCategory, setIndexOpenCategory] = useState(3);
-    const [filialContents, setFilialContents] = useState<{
-        id: number,
-        name: string
-    }[] | null>();
     const [selectedFilialDropDown, setSelectedFilialDropDown] = useState<{
         id: number,
         name: string
     } | null | undefined>(null);
 
-    useEffect(() => {
-        updateFilial();
-    }, []);
+    const {  data: filialContents } = useGetAllFilialQuery();
 
     useEffect(() => {
         if (!selectedFilialDropDown) return;
@@ -47,9 +41,6 @@ export const LeftSidebar = observer(({callbackMethod}: LeftSidebar) => {
         {name: 'Списание', component: <EmptyBody/>},
         {name: 'Накладные', component: <EmptyBody/>},
     ];
-
-    const updateFilial = async () =>
-        setFilialContents(await apiRequest.GetAllFilial());
 
     const callbackDropDownMenu = (id: number) =>
         setSelectedFilialDropDown(filialContents?.find(x => x.id == id));

@@ -1,4 +1,16 @@
-import {makeAutoObservable} from 'mobx';
+import {configureStore} from '@reduxjs/toolkit'
+import {api} from "../../api_request/api-request.ts";
+import {makeAutoObservable} from "mobx";
+
+
+
+export const AppStoreRedux = configureStore({
+    reducer: {
+        [api.reducerPath]: api.reducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(api.middleware),
+})
 
 class AppStore {
     private _isMobile = false;
