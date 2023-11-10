@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import {HTMLAttributes, useEffect, useState} from "react";
 import {arrowIcon} from "../../../../assets/img.ts";
-import {observer} from "mobx-react-lite";
-import {appStore} from "../../../../data/stores/app.store.ts";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../../data/stores/app.store.ts";
 
 type PaginationTable = HTMLAttributes<HTMLDivElement> & {
     maxPages: number;
@@ -11,19 +11,21 @@ type PaginationTable = HTMLAttributes<HTMLDivElement> & {
 
 const pagesCollapse = 4;
 
-export const PaginationTable = observer(({maxPages, callbackSelectedPage}: PaginationTable) => {
+export const PaginationTable = ({maxPages, callbackSelectedPage}: PaginationTable) => {
     const [firstIndex, setFirstIndex] = useState(1);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
 
+    const selectFilial = useSelector((state: RootState) => state.store.selectFilial);
+
     useEffect(() => {
         callbackSelectedPage(selectedIndex + 1);
-        if((selectedIndex + 1) - 4 >= maxPages - 6) setIsOpen(true);
+        if ((selectedIndex + 1) - 4 >= maxPages - 6) setIsOpen(true);
     }, [selectedIndex]);
 
     useEffect(() => {
         updatePagination();
-    }, [appStore.getSelectFilial, maxPages]);
+    }, [selectFilial, maxPages]);
 
     function updatePagination() {
         setSelectedIndex(0);
@@ -57,7 +59,8 @@ export const PaginationTable = observer(({maxPages, callbackSelectedPage}: Pagin
                 ))
             }
             <WrapperPage key='...' onClick={() => setIsOpen(true)}>...</WrapperPage>
-            <WrapperPage key={maxPages} isSelected={maxPages == selectedIndex} onClick={() => selectedItem(maxPages - 1)}>{maxPages}</WrapperPage>
+            <WrapperPage key={maxPages} isSelected={maxPages == selectedIndex}
+                         onClick={() => selectedItem(maxPages - 1)}>{maxPages}</WrapperPage>
         </>
     );
 
@@ -70,7 +73,7 @@ export const PaginationTable = observer(({maxPages, callbackSelectedPage}: Pagin
             <Img src={arrowIcon} onClick={() => plusAndMinusIndex(1)}/>
         </Wrapper>
     );
-});
+};
 
 PaginationTable.displayName = 'PaginationTable';
 

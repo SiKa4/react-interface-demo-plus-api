@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import {observer} from "mobx-react-lite";
-import {appStore} from "../../../data/stores/app.store.ts";
 import {BodyMainBody} from "./body_main_body/BodyMainBody.tsx";
 import {PaginationTable} from "./padination_table/PaginationTable.tsx";
 import {useEffect, useState} from "react";
 import {BodyParams} from "../../../data/Types.ts";
 import {useGetInfoAboutFilialByIdQuery} from "../../../api_request/api-request.ts";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../data/stores/app.store.ts";
 
 const initialBodyParams: BodyParams = {
     page: 1,
@@ -18,19 +19,21 @@ const initialBodyParams: BodyParams = {
 
 export const MainBody = observer(() => {
     const [paramsBodyRequest, setParamsBodyRequest] = useState(initialBodyParams);
-    const filial = appStore.getSelectFilial;
+
+    const selectFilial = useSelector((state : RootState) => state.store.selectFilial);
+    const isMobile = useSelector((state : RootState) => state.store.isMobile);
 
     const {data: bodyData, refetch: refetchBodyData} = useGetInfoAboutFilialByIdQuery({
-        idFilial: filial,
+        idFilial: selectFilial,
         args: paramsBodyRequest
     });
 
     useEffect(() => {
         getDataInFilial();
-    }, [filial, paramsBodyRequest]);
+    }, [selectFilial, paramsBodyRequest]);
 
     const getDataInFilial = async () => {
-        if (filial)
+        if (selectFilial)
             await refetchBodyData();
     }
 
@@ -42,7 +45,7 @@ export const MainBody = observer(() => {
     }
 
     return (
-        <Wrapper isMobile={appStore.getIsMobile}>
+        <Wrapper isMobile={isMobile}>
             <BodyMainBody data={bodyData} paramsBodyRequest={paramsBodyRequest}
                           setParamsBodyRequest={setParamsBodyRequest}/>
             <PaginationTable maxPages={bodyData?.max_pages ?? 0} callbackSelectedPage={callbackSelectedPage}/>

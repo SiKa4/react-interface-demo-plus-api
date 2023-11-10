@@ -2,7 +2,6 @@ import styled, {css} from "styled-components";
 import {strings} from "../../../../assets/strings/strings.ts";
 import {DropDownMenu} from "../../../drop_down_menu/DropDownMenu.tsx";
 import {basketIcon, diagramIcon, pencilIcon} from "../../../../assets/img.ts";
-import {observer} from "mobx-react-lite";
 import {HTMLAttributes} from "react";
 import {BodyData, BodyParams} from "../../../../data/Types.ts";
 
@@ -17,7 +16,7 @@ const dropDownContent = [
     {id: 2, name: 'Активно'},
     {id: 3, name: 'Не активно'}];
 
-export const BodyMainBody = observer((
+export const BodyMainBody = (
     {
         data,
         paramsBodyRequest,
@@ -105,7 +104,7 @@ export const BodyMainBody = observer((
             </Table>
         </Wrapper>
     );
-});
+};
 
 BodyMainBody.displayName = 'BodyMainBody';
 
@@ -115,7 +114,7 @@ const Wrapper = styled.div.attrs({className: 'body'})`
   height: calc(100% - 50px);
   overflow-x: hidden;
   overflow-y: auto;
-  
+
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -135,7 +134,7 @@ const Table = styled.table`
   border-spacing: 0;
   padding-left: 10px;
   padding-right: 10px;
-  
+
   th {
     border-bottom: var(--line-color) 1px solid;
   }
@@ -170,6 +169,7 @@ const TableRow = styled.tr<{ isHeader?: boolean }>`
     cursor: pointer;
     transition: box-shadow 0.5s ease-in-out;
     border-radius: 10px;
+
     &:hover {
       box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.47);
     }

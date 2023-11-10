@@ -2,25 +2,31 @@ import styled, {css} from "styled-components";
 import {LeftSidebar} from "../components/left_sidebar/LeftSidebar.tsx";
 import {useState} from "react";
 import {EmptyBody} from "../components/body/EmptyBody.tsx";
-import {appStore} from "../data/stores/app.store.ts";
+import {RootState} from "../data/stores/app.store.ts";
 import {hamburgerMenu} from "../assets/img.ts";
-import {observer} from "mobx-react-lite";
+import {useDispatch, useSelector} from "react-redux";
+import {setIsOpenLeftSidebar} from "../data/stores/actions/actions.ts";
 
-export const MainScreen = observer(() => {
+export const MainScreen = () => {
     const [body, setBody] = useState<JSX.Element>(<EmptyBody/>);
+
+    const dispatch = useDispatch();
+    const isMobile = useSelector((state: RootState) => state.store.isMobile);
+    const isOpenLeftSidebar = useSelector((state: RootState) => state.store.isOpenLeftSidebar);
+
     const selectedLeftSidebarCategory = (component: JSX.Element) => setBody(component);
 
     return (
         <Wrapper>
-            {appStore.getIsMobile &&
-                <HamburgerIcon src={hamburgerMenu} isOpen={appStore.isOpenLeftSidebar}
-                               onClick={() => appStore.setIsOpenLeftSidebar(!appStore.isOpenLeftSidebar)}/>
+            {isMobile &&
+                <HamburgerIcon src={hamburgerMenu} isOpen={isOpenLeftSidebar}
+                               onClick={() => dispatch(setIsOpenLeftSidebar(!isOpenLeftSidebar))}/>
             }
             <LeftSidebar callbackMethod={selectedLeftSidebarCategory}/>
             {body}
         </Wrapper>
     );
-});
+};
 
 
 MainScreen.displayName = 'MainScreen';
@@ -40,7 +46,7 @@ const HamburgerIcon = styled.img.attrs({className: 'hamburger-icon'})<{ isOpen: 
   position: absolute;
   left: 5px;
   top: 13px;
-  
+
   ${({isOpen}) =>
           isOpen &&
           css`

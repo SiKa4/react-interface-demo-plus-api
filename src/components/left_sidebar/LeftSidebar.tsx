@@ -5,25 +5,30 @@ import {HTMLAttributes, useEffect, useState} from "react";
 import {useGetAllFilialQuery} from "../../api_request/api-request.ts";
 import {EmptyBody} from "../body/EmptyBody.tsx";
 import {MainBody} from "../body/main_body/MainBody.tsx";
-import {appStore} from "../../data/stores/app.store.ts";
-import {observer} from 'mobx-react-lite';
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../../data/stores/app.store.ts";
+import {setSelectFilial} from "../../data/stores/actions/actions.ts";
 
 type LeftSidebar = HTMLAttributes<HTMLDivElement> & {
     callbackMethod: (component: JSX.Element) => void;
 };
 
-export const LeftSidebar = observer(({callbackMethod}: LeftSidebar) => {
+export const LeftSidebar = ({callbackMethod}: LeftSidebar) => {
     const [indexOpenCategory, setIndexOpenCategory] = useState(3);
     const [selectedFilialDropDown, setSelectedFilialDropDown] = useState<{
         id: number,
         name: string
     } | null | undefined>(null);
 
-    const {  data: filialContents } = useGetAllFilialQuery();
+    const dispatch = useDispatch();
+    const isMobile = useSelector((state: RootState) => state.store.isMobile);
+    const isOpenLeftSidebar = useSelector((state: RootState) => state.store.isOpenLeftSidebar);
+
+    const {data: filialContents} = useGetAllFilialQuery();
 
     useEffect(() => {
         if (!selectedFilialDropDown) return;
-        appStore.setSelectFilial(selectedFilialDropDown.id);
+        dispatch(setSelectFilial(selectedFilialDropDown.id));
     }, [selectedFilialDropDown]);
 
     useEffect(() => {
@@ -48,7 +53,7 @@ export const LeftSidebar = observer(({callbackMethod}: LeftSidebar) => {
     const setIsOpenCategory = (index: number) => setIndexOpenCategory(index);
 
     return (
-        <Wrapper isMobile={appStore.getIsMobile} isOpen={appStore.isOpenLeftSidebar}>
+        <Wrapper isMobile={isMobile} isOpen={isOpenLeftSidebar}>
             <LeftSidebarHeader/>
             <ExpandMenuWrapper>
                 <FilialWrapper>
@@ -64,7 +69,7 @@ export const LeftSidebar = observer(({callbackMethod}: LeftSidebar) => {
             </ExpandMenuWrapper>
         </Wrapper>
     );
-});
+};
 
 LeftSidebar.displayName = 'LeftSidebar'
 
